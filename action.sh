@@ -6,10 +6,14 @@ function print_info() {
     echo -e "\e[36mINFO: ${1}\e[m"
 }
 
-if [ -n "${REQUIREMENTS}" ] && [ -f "${GITHUB_WORKSPACE}/${REQUIREMENTS}" ]; then
-    pip install -r "${GITHUB_WORKSPACE}/${REQUIREMENTS}"
+WORKSPACE=${GITHUB_WORKSPACE}${CUSTOM_WORKSPACE:-''}
+
+echo ${WORKSPACE}
+
+if [ -n "${REQUIREMENTS}" ] && [ -f "${WORKSPACE}/${REQUIREMENTS}" ]; then
+    pip install -r "${WORKSPACE}/${REQUIREMENTS}"
 else
-    REQUIREMENTS="${GITHUB_WORKSPACE}/requirements.txt"
+    REQUIREMENTS="${WORKSPACE}/requirements.txt"
     if [ -f "${REQUIREMENTS}" ]; then
         pip install -r "${REQUIREMENTS}"
     fi
@@ -17,7 +21,7 @@ fi
 
 if [ -n "${CUSTOM_DOMAIN}" ]; then
     print_info "Setting custom domain for github pages"
-    echo "${CUSTOM_DOMAIN}" > "${GITHUB_WORKSPACE}/docs/CNAME"
+    echo "${CUSTOM_DOMAIN}" > "${WORKSPACE}/docs/CNAME"
 fi
 
 if [ -n "${GITHUB_TOKEN}" ]; then
@@ -40,4 +44,4 @@ fi
 git remote rm origin
 git remote add origin "${remote_repo}"
 
-mkdocs gh-deploy --config-file "${GITHUB_WORKSPACE}/mkdocs.yml" --force
+mkdocs gh-deploy --config-file "${WORKSPACE}/mkdocs.yml" --force
